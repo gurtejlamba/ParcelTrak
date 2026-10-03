@@ -1,0 +1,59 @@
+<%- include('../partials/header', { title }) %>
+<div class="container">
+  <a href="/sender" style="font-size:0.85rem;">&larr; My Consignments</a>
+  <div class="btn-row" style="justify-content: space-between; align-items: baseline; margin-top:0.5rem;">
+    <h1 class="tracking-no"><%= consignment.tracking_number %></h1>
+    <span class="badge <%= statusBadgeClass(consignment.current_status) %>">
+      <%= statusLabels[consignment.current_status] || consignment.current_status %>
+    </span>
+  </div>
+  <%- include('../partials/flash') %>
+
+  <div class="card">
+    <div class="detail-grid">
+      <div><div class="k">Recipient</div><div class="v"><%= consignment.recipient_name %></div></div>
+      <div><div class="k">Phone</div><div class="v"><%= consignment.recipient_phone %></div></div>
+      <div><div class="k">Address</div><div class="v"><%= consignment.recipient_address %></div></div>
+      <div><div class="k">Route</div><div class="v"><%= consignment.origin_name %> &rarr; <%= consignment.dest_name %></div></div>
+      <div><div class="k">Actual Weight</div><div class="v"><%= consignment.actual_weight.toFixed(2) %> kg</div></div>
+      <div><div class="k">Dimensions</div><div class="v"><%= consignment.length_cm %> &times; <%= consignment.width_cm %> &times; <%= consignment.height_cm %> cm</div></div>
+      <div><div class="k">Chargeable Weight</div><div class="v"><%= consignment.chargeable_weight.toFixed(2) %> kg</div></div>
+      <div><div class="k">Booked On</div><div class="v"><%= formatDate(consignment.created_at) %></div></div>
+    </div>
+    <% if (consignment.current_status === 'BOOKED') { %>
+      <form method="POST" action="/sender/consignments/<%= consignment.id %>/cancel" onsubmit="return confirm('Cancel this consignment? This cannot be undone.');">
+        <button type="submit" class="btn btn-danger">Cancel Consignment</button>
+      </form>
+    <% } %>
+  </div>
+
+  <% if (invoice) { %>
+    <h2>Invoice</h2>
+    <div class="card">
+      <div class="detail-grid">
+        <div><div class="k">Amount</div><div class="v"><%= formatMoney(invoice.amount) %></div></div>
+        <div><div class="k">Status</div><div class="v"><span class="badge badge-<%= invoice.status.toLowerCase() %>"><%= invoice.status %></span></div></div>
+        <div><div class="k">Generated</div><div class="v"><%= formatDate(invoice.generated_at) %></div></div>
+      </div>
+      <% if (invoice.status === 'UNPAID' && consignment.current_status !== 'CANCELLED') { %>
+        <form method="POST" action="/sender/invoices/<%= invoice.id %>/pay">
+          <button type="submit" class="btn btn-orange">Pay Now</button>
+        </form>
+      <% } %>
+    </div>
+  <% } %>
+
+  <h2>Movement History</h2>
+  <div class="card">
+    <ul class="timeline">
+      <% events.forEach(function(ev) { %>
+        <li>
+          <div class="t-type"><%= statusLabels[ev.event_type] || ev.event_type %></div>
+          <div class="t-meta"><%= formatDate(ev.created_at) %><% if (ev.branch_name) { %> &middot; <%= ev.branch_name %><% } %></div>
+          <% if (ev.remarks) { %><div class="t-remarks"><%= ev.remarks %></div><% } %>
+        </li>
+      <% }) %>
+    </ul>
+  </div>
+</div>
+<%- include('../partials/footer') %>

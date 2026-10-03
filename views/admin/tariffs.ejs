@@ -1,0 +1,50 @@
+<%- include('../partials/header', { title }) %>
+<div class="container">
+  <h1>Tariff Rules</h1>
+  <p class="subtitle">Only one tariff rule is active at a time; it's applied to every new booking's invoice.</p>
+  <%- include('../partials/flash') %>
+
+  <% if (errors && errors.length) { %>
+    <div class="errors"><ul><% errors.forEach(function(e) { %><li><%= e %></li><% }) %></ul></div>
+  <% } %>
+
+  <div class="card">
+    <h2 style="margin-top:0;">Create New Tariff</h2>
+    <form method="POST" action="/admin/tariffs">
+      <div class="field"><label for="name">Tariff Name</label><input type="text" id="name" name="name" value="<%= form.name || '' %>" required></div>
+      <div class="row-3">
+        <div class="field"><label for="ratePerKg">Rate per kg (&#8377;)</label><input type="number" step="0.01" min="0.01" id="ratePerKg" name="ratePerKg" value="<%= form.ratePerKg || '' %>" required></div>
+        <div class="field"><label for="volumetricDivisor">Volumetric Divisor</label><input type="number" step="1" min="1" id="volumetricDivisor" name="volumetricDivisor" value="<%= form.volumetricDivisor || 5000 %>" required></div>
+        <div class="field"><label for="minCharge">Minimum Charge (&#8377;)</label><input type="number" step="0.01" min="0" id="minCharge" name="minCharge" value="<%= form.minCharge || '' %>" required></div>
+      </div>
+      <p class="hint">Volumetric weight = (L &times; W &times; H in cm) &divide; divisor. Standard courier divisor is 5000.</p>
+      <button type="submit" class="btn btn-orange">Create &amp; Activate</button>
+    </form>
+  </div>
+
+  <h2>All Tariffs</h2>
+  <div class="card table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Rate/kg</th><th>Divisor</th><th>Min Charge</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        <% tariffs.forEach(function(t) { %>
+          <tr>
+            <td><%= t.name %></td>
+            <td><%= formatMoney(t.rate_per_kg) %></td>
+            <td><%= t.volumetric_divisor %></td>
+            <td><%= formatMoney(t.min_charge) %></td>
+            <td><span class="badge <%= t.is_active ? 'badge-delivered' : 'badge-cancelled' %>"><%= t.is_active ? 'Active' : 'Inactive' %></span></td>
+            <td>
+              <% if (!t.is_active) { %>
+                <form method="POST" action="/admin/tariffs/<%= t.id %>/activate">
+                  <button type="submit" class="btn btn-outline btn-sm">Activate</button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<%- include('../partials/footer') %>

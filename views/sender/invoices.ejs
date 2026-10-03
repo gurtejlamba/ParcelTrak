@@ -1,0 +1,35 @@
+<%- include('../partials/header', { title }) %>
+<div class="container">
+  <h1>My Invoices</h1>
+  <p class="subtitle">Freight charges for your consignments.</p>
+  <%- include('../partials/flash') %>
+
+  <div class="card table-wrap">
+    <% if (invoices.length === 0) { %>
+      <div class="empty-state">No invoices yet.</div>
+    <% } else { %>
+      <table>
+        <thead><tr><th>Tracking No.</th><th>Recipient</th><th>Amount</th><th>Status</th><th>Generated</th><th></th></tr></thead>
+        <tbody>
+          <% invoices.forEach(function(inv) { %>
+            <tr>
+              <td class="tracking-no"><%= inv.tracking_number %></td>
+              <td><%= inv.recipient_name %></td>
+              <td><%= formatMoney(inv.amount) %></td>
+              <td><span class="badge badge-<%= inv.status.toLowerCase() %>"><%= inv.status %></span></td>
+              <td><%= formatDate(inv.generated_at) %></td>
+              <td>
+                <% if (inv.status === 'UNPAID' && inv.consignment_status !== 'CANCELLED') { %>
+                  <form method="POST" action="/sender/invoices/<%= inv.id %>/pay" style="display:inline;">
+                    <button type="submit" class="btn btn-orange btn-sm">Pay Now</button>
+                  </form>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</div>
+<%- include('../partials/footer') %>

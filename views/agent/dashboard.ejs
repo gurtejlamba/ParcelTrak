@@ -1,0 +1,27 @@
+<%- include('../partials/header', { title }) %>
+<div class="container">
+  <h1>My Deliveries</h1>
+  <p class="subtitle">Consignments currently assigned to you.</p>
+  <%- include('../partials/flash') %>
+
+  <div class="card table-wrap">
+    <% if (consignments.length === 0) { %>
+      <div class="empty-state">No active assignments right now.</div>
+    <% } else { %>
+      <table>
+        <thead><tr><th>Tracking No.</th><th>Recipient</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          <% consignments.forEach(function(c) { %>
+            <tr>
+              <td class="tracking-no"><%= c.tracking_number %></td>
+              <td><%= c.recipient_name %> &middot; <%= c.recipient_phone %></td>
+              <td><span class="badge <%= statusBadgeClass(c.current_status) %>"><%= statusLabels[c.current_status] || c.current_status %></span></td>
+              <td><a href="/agent/consignments/<%= c.id %>" class="btn btn-outline btn-sm">Open</a></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</div>
+<%- include('../partials/footer') %>

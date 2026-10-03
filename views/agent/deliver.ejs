@@ -1,0 +1,32 @@
+<%- include('../partials/header', { title }) %>
+<div class="container-narrow">
+  <a href="/agent/consignments/<%= consignment.id %>" style="font-size:0.85rem;">&larr; Back</a>
+  <h1>Proof of Delivery</h1>
+  <p class="subtitle tracking-no"><%= consignment.tracking_number %> &middot; <%= consignment.recipient_name %></p>
+
+  <% if (error) { %>
+    <div class="errors"><ul><li><%= error %></li></ul></div>
+  <% } %>
+
+  <div class="card">
+    <form method="POST" action="/agent/consignments/<%= consignment.id %>/deliver" id="podForm">
+      <div class="field">
+        <label for="receiverName">Receiver's Name</label>
+        <input type="text" id="receiverName" name="receiverName" required autofocus>
+      </div>
+      <div class="field">
+        <label>Receiver's Signature</label>
+        <div class="signature-pad-wrap">
+          <canvas id="signature-pad"></canvas>
+        </div>
+        <div class="hint">
+          <button type="button" id="clearSignature" class="btn-link-plain" style="color:var(--navy); text-decoration:underline;">Clear signature</button>
+        </div>
+        <input type="hidden" id="signatureData" name="signatureData">
+      </div>
+      <button type="submit" class="btn btn-orange" style="width:100%;">Confirm Delivery</button>
+    </form>
+  </div>
+</div>
+<script src="/js/signature-pad.js"></script>
+<%- include('../partials/footer') %>

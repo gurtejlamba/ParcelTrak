@@ -1,0 +1,17 @@
+{
+  "name": "parceltrak",
+  "version": "1.0.0",
+  "description": "PARCELTRAK - Courier Management System (SRS v1.0 implementation)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node db/seed.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "ejs": "^3.1.10",
+    "express": "^4.21.0",
+    "express-session": "^1.18.0"
+  }
+}

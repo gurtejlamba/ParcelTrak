@@ -1,0 +1,55 @@
+<%- include('../partials/header', { title }) %>
+<div class="container">
+  <h1><%= branch.name %></h1>
+  <p class="subtitle">Branch code <%= branch.code %> &middot; <%= branch.address %></p>
+  <%- include('../partials/flash') %>
+
+  <div class="grid grid-3">
+    <div class="card stat-card"><div class="value"><%= stats.total_booked %></div><div class="label">Total Booked (Origin)</div></div>
+    <div class="card stat-card"><div class="value"><%= stats.delivered %></div><div class="label">Delivered</div></div>
+    <div class="card stat-card"><div class="value"><%= stats.failed %></div><div class="label">Failed Attempts (current)</div></div>
+  </div>
+
+  <h2>Unassigned Bookings</h2>
+  <div class="card table-wrap">
+    <% if (unassigned.length === 0) { %>
+      <div class="empty-state">Nothing waiting for assignment.</div>
+    <% } else { %>
+      <table>
+        <thead><tr><th>Tracking No.</th><th>Recipient</th><th>Booked</th><th></th></tr></thead>
+        <tbody>
+          <% unassigned.forEach(function(c) { %>
+            <tr>
+              <td class="tracking-no"><%= c.tracking_number %></td>
+              <td><%= c.recipient_name %></td>
+              <td><%= formatDate(c.created_at) %></td>
+              <td><a href="/manager/assign" class="btn btn-outline btn-sm">Assign</a></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+
+  <h2>Active Assignments</h2>
+  <div class="card table-wrap">
+    <% if (active.length === 0) { %>
+      <div class="empty-state">No active assignments at this branch.</div>
+    <% } else { %>
+      <table>
+        <thead><tr><th>Tracking No.</th><th>Recipient</th><th>Agent</th><th>Status</th></tr></thead>
+        <tbody>
+          <% active.forEach(function(c) { %>
+            <tr>
+              <td class="tracking-no"><%= c.tracking_number %></td>
+              <td><%= c.recipient_name %></td>
+              <td><%= c.agent_name %></td>
+              <td><span class="badge <%= statusBadgeClass(c.current_status) %>"><%= statusLabels[c.current_status] || c.current_status %></span></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</div>
+<%- include('../partials/footer') %>

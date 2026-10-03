@@ -1,0 +1,41 @@
+<%- include('../partials/header', { title }) %>
+<div class="container">
+  <h1>Assign Consignments</h1>
+  <p class="subtitle">Assign or reassign a delivery agent for consignments moving through your branch.</p>
+  <%- include('../partials/flash') %>
+
+  <div class="card table-wrap">
+    <% if (consignments.length === 0) { %>
+      <div class="empty-state">No open consignments at this branch.</div>
+    <% } else if (agents.length === 0) { %>
+      <div class="errors"><ul><li>No active delivery agents are registered at your branch. Ask an administrator to add one.</li></ul></div>
+    <% } else { %>
+      <table>
+        <thead><tr><th>Tracking No.</th><th>Recipient</th><th>Status</th><th>Current Agent</th><th>Assign To</th><th></th></tr></thead>
+        <tbody>
+          <% consignments.forEach(function(c) { %>
+            <tr>
+              <td class="tracking-no"><%= c.tracking_number %></td>
+              <td><%= c.recipient_name %></td>
+              <td><span class="badge <%= statusBadgeClass(c.current_status) %>"><%= c.current_status %></span></td>
+              <td><%= c.current_agent_name || '—' %></td>
+              <td>
+                <form method="POST" action="/manager/consignments/<%= c.id %>/assign" style="display:flex; gap:0.4rem;">
+                  <select name="agentId" style="min-width:140px;" <%= c.current_status === 'DELIVERED' ? 'disabled' : '' %>>
+                    <% agents.forEach(function(a) { %>
+                      <option value="<%= a.id %>" <%= String(c.current_agent_id) === String(a.id) ? 'selected' : '' %>><%= a.name %></option>
+                    <% }) %>
+                  </select>
+                  <button type="submit" class="btn btn-outline btn-sm" <%= c.current_status === 'DELIVERED' ? 'disabled' : '' %>>
+                    <%= c.current_agent_id ? 'Reassign' : 'Assign' %>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</div>
+<%- include('../partials/footer') %>

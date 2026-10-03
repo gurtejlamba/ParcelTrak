@@ -1,0 +1,117 @@
+<%- include('../partials/header', { title }) %>
+<div class="container">
+  <h1>Book a Consignment</h1>
+  <p class="subtitle">Enter recipient and parcel details. A tracking number is generated instantly.</p>
+
+  <% if (errors && errors.length) { %>
+    <div class="errors"><ul><% errors.forEach(function(e) { %><li><%= e %></li><% }) %></ul></div>
+  <% } %>
+
+  <% if (!tariff) { %>
+    <div class="errors"><ul><li>No active tariff rule is configured. Ask an administrator to configure one before booking.</li></ul></div>
+  <% } else { %>
+  <div class="grid" style="grid-template-columns: 2fr 1fr; align-items:start;">
+    <div class="card">
+      <form method="POST" action="/sender/book" id="bookForm">
+        <h2 style="margin-top:0;">Recipient</h2>
+        <div class="field">
+          <label for="recipientName">Recipient Name</label>
+          <input type="text" id="recipientName" name="recipientName" value="<%= form.recipientName || '' %>" required>
+        </div>
+        <div class="row-2">
+          <div class="field">
+            <label for="recipientPhone">Recipient Phone</label>
+            <input type="tel" id="recipientPhone" name="recipientPhone" value="<%= form.recipientPhone || '' %>" required>
+          </div>
+          <div class="field">
+            <label for="recipientAddress">Recipient Address</label>
+            <input type="text" id="recipientAddress" name="recipientAddress" value="<%= form.recipientAddress || '' %>" required>
+          </div>
+        </div>
+
+        <h2>Route</h2>
+        <div class="row-2">
+          <div class="field">
+            <label for="originBranchId">Origin Branch</label>
+            <select id="originBranchId" name="originBranchId" required>
+              <option value="">Select origin...</option>
+              <% branches.forEach(function(b) { %>
+                <option value="<%= b.id %>" <%= String(form.originBranchId) === String(b.id) ? 'selected' : '' %>><%= b.name %> (<%= b.code %>)</option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="field">
+            <label for="destBranchId">Destination Branch</label>
+            <select id="destBranchId" name="destBranchId" required>
+              <option value="">Select destination...</option>
+              <% branches.forEach(function(b) { %>
+                <option value="<%= b.id %>" <%= String(form.destBranchId) === String(b.id) ? 'selected' : '' %>><%= b.name %> (<%= b.code %>)</option>
+              <% }) %>
+            </select>
+          </div>
+        </div>
+
+        <h2>Parcel Details</h2>
+        <div class="field">
+          <label for="actualWeight">Actual Weight (kg)</label>
+          <input type="number" step="0.01" min="0.01" id="actualWeight" name="actualWeight" value="<%= form.actualWeight || '' %>" required>
+        </div>
+        <div class="row-3">
+          <div class="field">
+            <label for="lengthCm">Length (cm)</label>
+            <input type="number" step="0.1" min="0.1" id="lengthCm" name="lengthCm" value="<%= form.lengthCm || '' %>" required>
+          </div>
+          <div class="field">
+            <label for="widthCm">Width (cm)</label>
+            <input type="number" step="0.1" min="0.1" id="widthCm" name="widthCm" value="<%= form.widthCm || '' %>" required>
+          </div>
+          <div class="field">
+            <label for="heightCm">Height (cm)</label>
+            <input type="number" step="0.1" min="0.1" id="heightCm" name="heightCm" value="<%= form.heightCm || '' %>" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-orange">Book Consignment</button>
+      </form>
+    </div>
+
+    <div class="card" style="position:sticky; top:1rem;">
+      <h2 style="margin-top:0;">Fare Estimate</h2>
+      <p class="hint">Rate: <%= formatMoney(tariff.rate_per_kg) %>/kg &middot; Min charge <%= formatMoney(tariff.min_charge) %></p>
+      <div class="detail-grid" style="grid-template-columns: 1fr;">
+        <div><div class="k">Volumetric Weight</div><div class="v" id="estVolumetric">&mdash;</div></div>
+        <div><div class="k">Chargeable Weight</div><div class="v" id="estChargeable">&mdash;</div></div>
+        <div><div class="k">Estimated Freight</div><div class="v" id="estAmount" style="color:var(--orange); font-size:1.3rem;">&mdash;</div></div>
+      </div>
+      <p class="hint">Chargeable weight is the greater of actual and volumetric weight (L&times;W&times;H &divide; <%= tariff.volumetric_divisor %>).</p>
+    </div>
+  </div>
+  <% } %>
+</div>
+
+<script>
+  (function () {
+    const rate = <%- JSON.stringify(tariff ? tariff.rate_per_kg : 0) %>;
+    const divisor = <%- JSON.stringify(tariff ? tariff.volumetric_divisor : 5000) %>;
+    const minCharge = <%- JSON.stringify(tariff ? tariff.min_charge : 0) %>;
+    const ids = ['actualWeight', 'lengthCm', 'widthCm', 'heightCm'];
+    function recalc() {
+      const w = parseFloat(document.getElementById('actualWeight').value) || 0;
+      const l = parseFloat(document.getElementById('lengthCm').value) || 0;
+      const wd = parseFloat(document.getElementById('widthCm').value) || 0;
+      const h = parseFloat(document.getElementById('heightCm').value) || 0;
+      const vol = (l * wd * h) / divisor;
+      const chargeable = Math.max(w, vol);
+      const amount = Math.max(chargeable * rate, minCharge);
+      document.getElementById('estVolumetric').textContent = vol.toFixed(2) + ' kg';
+      document.getElementById('estChargeable').textContent = chargeable.toFixed(2) + ' kg';
+      document.getElementById('estAmount').textContent = '₹' + amount.toFixed(2);
+    }
+    ids.forEach(function (id) {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', recalc);
+    });
+    recalc();
+  })();
+</script>
+<%- include('../partials/footer') %>

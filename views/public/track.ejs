@@ -1,0 +1,47 @@
+<%- include('../partials/header', { title }) %>
+<div class="container">
+  <h1>Track a Consignment</h1>
+  <p class="subtitle">Enter the tracking number you received at booking. No login required.</p>
+
+  <div class="card">
+    <form method="GET" action="/track" style="display:flex; gap:0.6rem;">
+      <input type="text" name="q" value="<%= trackingNumber %>" placeholder="e.g. PT20261004-ABC123" style="flex:1;" autofocus>
+      <button type="submit" class="btn btn-orange">Track</button>
+    </form>
+  </div>
+
+  <% if (notFound) { %>
+    <div class="errors"><ul><li>No consignment found for tracking number "<%= trackingNumber %>". Please check and try again.</li></ul></div>
+  <% } %>
+
+  <% if (result) { %>
+    <div class="card">
+      <div class="btn-row" style="justify-content: space-between; align-items: baseline; margin-bottom: 0.8rem;">
+        <h2 style="margin:0;" class="tracking-no"><%= result.consignment.tracking_number %></h2>
+        <span class="badge <%= statusBadgeClass(result.consignment.current_status) %>">
+          <%= result.statusLabels[result.consignment.current_status] || result.consignment.current_status %>
+        </span>
+      </div>
+      <div class="detail-grid">
+        <div><div class="k">Route</div><div class="v"><%= result.consignment.origin_name %> (<%= result.consignment.origin_code %>) &rarr; <%= result.consignment.dest_name %> (<%= result.consignment.dest_code %>)</div></div>
+        <div><div class="k">Recipient</div><div class="v"><%= result.consignment.recipient_name %></div></div>
+        <div><div class="k">Chargeable Weight</div><div class="v"><%= result.consignment.chargeable_weight.toFixed(2) %> kg</div></div>
+        <div><div class="k">Booked On</div><div class="v"><%= formatDate(result.consignment.created_at) %></div></div>
+      </div>
+    </div>
+
+    <h2>Movement History</h2>
+    <div class="card">
+      <ul class="timeline">
+        <% result.events.forEach(function(ev) { %>
+          <li>
+            <div class="t-type"><%= result.statusLabels[ev.event_type] || ev.event_type %></div>
+            <div class="t-meta"><%= formatDate(ev.created_at) %><% if (ev.branch_name) { %> &middot; <%= ev.branch_name %><% } %></div>
+            <% if (ev.remarks) { %><div class="t-remarks"><%= ev.remarks %></div><% } %>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+  <% } %>
+</div>
+<%- include('../partials/footer') %>

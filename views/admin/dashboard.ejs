@@ -1,0 +1,19 @@
+<%- include('../partials/header', { title }) %>
+<div class="container">
+  <h1>Admin Dashboard</h1>
+  <p class="subtitle">System-wide overview.</p>
+  <%- include('../partials/flash') %>
+
+  <div class="grid grid-4">
+    <div class="card stat-card"><div class="value"><%= stats.active_users %></div><div class="label">Active Users</div></div>
+    <div class="card stat-card"><div class="value"><%= stats.active_branches %></div><div class="label">Active Branches</div></div>
+    <div class="card stat-card"><div class="value"><%= stats.total_consignments %></div><div class="label">Total Consignments</div></div>
+    <div class="card stat-card"><div class="value"><%= formatMoney(stats.revenue_collected) %></div><div class="label">Revenue Collected</div></div>
+  </div>
+  <div class="grid grid-3">
+    <div class="card stat-card"><div class="value"><%= formatMoney(stats.revenue_outstanding) %></div><div class="label">Revenue Outstanding</div></div>
+    <a href="/admin/users" class="card" style="text-decoration:none; display:flex; flex-direction:column; justify-content:center; align-items:center;"><strong style="color:var(--navy);">Manage Users</strong></a>
+    <a href="/admin/branches" class="card" style="text-decoration:none; display:flex; flex-direction:column; justify-content:center; align-items:center;"><strong style="color:var(--navy);">Manage Branches</strong></a>
+  </div>
+</div>
+<%- include('../partials/footer') %>

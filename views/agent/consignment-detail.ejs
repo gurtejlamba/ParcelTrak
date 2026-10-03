@@ -1,0 +1,61 @@
+<%- include('../partials/header', { title }) %>
+<div class="container">
+  <a href="/agent" style="font-size:0.85rem;">&larr; My Deliveries</a>
+  <div class="btn-row" style="justify-content: space-between; align-items: baseline; margin-top:0.5rem;">
+    <h1 class="tracking-no"><%= consignment.tracking_number %></h1>
+    <span class="badge <%= statusBadgeClass(consignment.current_status) %>">
+      <%= statusLabels[consignment.current_status] || consignment.current_status %>
+    </span>
+  </div>
+  <%- include('../partials/flash') %>
+
+  <div class="card">
+    <div class="detail-grid">
+      <div><div class="k">Recipient</div><div class="v"><%= consignment.recipient_name %></div></div>
+      <div><div class="k">Phone</div><div class="v"><%= consignment.recipient_phone %></div></div>
+      <div><div class="k">Address</div><div class="v"><%= consignment.recipient_address %></div></div>
+      <div><div class="k">Route</div><div class="v"><%= consignment.origin_name %> &rarr; <%= consignment.dest_name %></div></div>
+      <div><div class="k">Weight</div><div class="v"><%= consignment.chargeable_weight.toFixed(2) %> kg (chargeable)</div></div>
+      <% if (failedAttempts > 0) { %>
+        <div><div class="k">Failed Attempts</div><div class="v" style="color:var(--error);"><%= failedAttempts %></div></div>
+      <% } %>
+    </div>
+
+    <% if (!isTerminal) { %>
+      <h2 style="margin-top:0.5rem;">Actions</h2>
+      <div class="btn-row" style="margin-bottom:1.2rem;">
+        <form method="POST" action="/agent/consignments/<%= consignment.id %>/scan">
+          <input type="hidden" name="eventType" value="PICKED_UP">
+          <button type="submit" class="btn btn-outline btn-sm">Mark Picked Up</button>
+        </form>
+        <form method="POST" action="/agent/consignments/<%= consignment.id %>/scan">
+          <input type="hidden" name="eventType" value="OUT_FOR_DELIVERY">
+          <button type="submit" class="btn btn-outline btn-sm">Mark Out for Delivery</button>
+        </form>
+        <a href="/agent/consignments/<%= consignment.id %>/deliver" class="btn btn-orange btn-sm">Capture Proof of Delivery</a>
+      </div>
+
+      <form method="POST" action="/agent/consignments/<%= consignment.id %>/fail" style="max-width:420px;">
+        <div class="field">
+          <label for="reason">Log a Failed Delivery Attempt</label>
+          <input type="text" id="reason" name="reason" placeholder="e.g. Receiver not available">
+        </div>
+        <button type="submit" class="btn btn-danger btn-sm">Record Failed Attempt</button>
+      </form>
+    <% } %>
+  </div>
+
+  <h2>Movement History</h2>
+  <div class="card">
+    <ul class="timeline">
+      <% events.forEach(function(ev) { %>
+        <li>
+          <div class="t-type"><%= statusLabels[ev.event_type] || ev.event_type %></div>
+          <div class="t-meta"><%= formatDate(ev.created_at) %><% if (ev.branch_name) { %> &middot; <%= ev.branch_name %><% } %></div>
+          <% if (ev.remarks) { %><div class="t-remarks"><%= ev.remarks %></div><% } %>
+        </li>
+      <% }) %>
+    </ul>
+  </div>
+</div>
+<%- include('../partials/footer') %>

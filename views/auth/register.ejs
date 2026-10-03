@@ -1,0 +1,30 @@
+<%- include('../partials/header', { title }) %>
+<div class="container-narrow">
+  <h1>Create a Sender Account</h1>
+  <p class="subtitle">Book and track consignments as a Sender.</p>
+  <%- include('../partials/flash') %>
+  <div class="card">
+    <form method="POST" action="/register">
+      <div class="field">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" required autofocus>
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" minlength="6" required>
+        <div class="hint">At least 6 characters.</div>
+      </div>
+      <div class="field">
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" minlength="6" required>
+      </div>
+      <button type="submit" class="btn btn-orange" style="width:100%;">Create Account</button>
+    </form>
+  </div>
+  <p style="font-size:0.88rem; color:var(--text-muted);">Already have an account? <a href="/login">Log in</a>.</p>
+</div>
+<%- include('../partials/footer') %>

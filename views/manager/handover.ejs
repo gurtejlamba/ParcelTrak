@@ -1,0 +1,57 @@
+<%- include('../partials/header', { title }) %>
+<div class="container">
+  <h1>Branch Handover</h1>
+  <p class="subtitle">Record incoming or outgoing consignment movement at your branch.</p>
+  <%- include('../partials/flash') %>
+
+  <div class="card">
+    <form method="POST" action="/manager/handover">
+      <div class="row-2">
+        <div class="field">
+          <label for="consignmentId">Consignment</label>
+          <select id="consignmentId" name="consignmentId" required>
+            <option value="">Select a consignment...</option>
+            <% consignments.forEach(function(c) { %>
+              <option value="<%= c.id %>"><%= c.tracking_number %> — <%= c.recipient_name %> (<%= c.current_status %>)</option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="field">
+          <label for="handoverType">Type</label>
+          <select id="handoverType" name="handoverType" required>
+            <option value="INCOMING">Incoming (arrived at this branch)</option>
+            <option value="OUTGOING">Outgoing (departed this branch)</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="remarks">Remarks (optional)</label>
+        <input type="text" id="remarks" name="remarks" placeholder="e.g. Received via truck no. RJ14-XXXX">
+      </div>
+      <button type="submit" class="btn btn-orange">Record Handover</button>
+    </form>
+  </div>
+
+  <h2>Recent Handovers</h2>
+  <div class="card table-wrap">
+    <% if (recent.length === 0) { %>
+      <div class="empty-state">No handovers recorded yet.</div>
+    <% } else { %>
+      <table>
+        <thead><tr><th>Tracking No.</th><th>Type</th><th>Handled By</th><th>Remarks</th><th>When</th></tr></thead>
+        <tbody>
+          <% recent.forEach(function(h) { %>
+            <tr>
+              <td class="tracking-no"><%= h.tracking_number %></td>
+              <td><span class="badge <%= h.handover_type === 'INCOMING' ? 'badge-delivered' : 'badge-transit' %>"><%= h.handover_type %></span></td>
+              <td><%= h.handled_by_name %></td>
+              <td><%= h.remarks || '—' %></td>
+              <td><%= formatDate(h.created_at) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</div>
+<%- include('../partials/footer') %>

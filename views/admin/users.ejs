@@ -1,0 +1,76 @@
+<%- include('../partials/header', { title }) %>
+<div class="container">
+  <h1>Manage Users</h1>
+  <p class="subtitle">Create, update, or deactivate accounts.</p>
+  <%- include('../partials/flash') %>
+
+  <% if (errors && errors.length) { %>
+    <div class="errors"><ul><% errors.forEach(function(e) { %><li><%= e %></li><% }) %></ul></div>
+  <% } %>
+
+  <div class="card">
+    <h2 style="margin-top:0;">Add User</h2>
+    <form method="POST" action="/admin/users">
+      <div class="row-2">
+        <div class="field"><label for="name">Name</label><input type="text" id="name" name="name" value="<%= form.name || '' %>" required></div>
+        <div class="field"><label for="email">Email</label><input type="email" id="email" name="email" value="<%= form.email || '' %>" required></div>
+      </div>
+      <div class="row-3">
+        <div class="field"><label for="password">Temporary Password</label><input type="text" id="password" name="password" minlength="6" required></div>
+        <div class="field">
+          <label for="role">Role</label>
+          <select id="role" name="role" id="roleSelect" onchange="document.getElementById('branchField').style.display = (this.value==='AGENT'||this.value==='MANAGER') ? 'block':'none';">
+            <option value="SENDER" <%= form.role === 'SENDER' ? 'selected' : '' %>>Sender</option>
+            <option value="AGENT" <%= form.role === 'AGENT' ? 'selected' : '' %>>Delivery Agent</option>
+            <option value="MANAGER" <%= form.role === 'MANAGER' ? 'selected' : '' %>>Branch Manager</option>
+            <option value="ADMIN" <%= form.role === 'ADMIN' ? 'selected' : '' %>>Administrator</option>
+          </select>
+        </div>
+        <div class="field" id="branchField" style="<%= (form.role==='AGENT'||form.role==='MANAGER') ? '' : 'display:none;' %>">
+          <label for="branchId">Branch</label>
+          <select id="branchId" name="branchId">
+            <option value="">Select branch...</option>
+            <% branches.forEach(function(b) { %>
+              <option value="<%= b.id %>" <%= String(form.branchId) === String(b.id) ? 'selected' : '' %>><%= b.name %></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-orange">Create User</button>
+    </form>
+  </div>
+
+  <h2>All Users</h2>
+  <div class="card table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Branch</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        <% users.forEach(function(u) { %>
+          <tr>
+            <td><%= u.name %></td>
+            <td><%= u.email %></td>
+            <td>
+              <form method="POST" action="/admin/users/<%= u.id %>/update" style="display:flex; gap:0.3rem;">
+                <select name="role" onchange="this.form.submit()">
+                  <option value="SENDER" <%= u.role === 'SENDER' ? 'selected' : '' %>>Sender</option>
+                  <option value="AGENT" <%= u.role === 'AGENT' ? 'selected' : '' %>>Agent</option>
+                  <option value="MANAGER" <%= u.role === 'MANAGER' ? 'selected' : '' %>>Manager</option>
+                  <option value="ADMIN" <%= u.role === 'ADMIN' ? 'selected' : '' %>>Admin</option>
+                </select>
+                <input type="hidden" name="branchId" value="<%= u.branch_id || '' %>">
+              </form>
+            </td>
+            <td><%= u.branch_name || '—' %></td>
+            <td><span class="badge <%= u.is_active ? 'badge-delivered' : 'badge-cancelled' %>"><%= u.is_active ? 'Active' : 'Inactive' %></span></td>
+            <td>
+              <form method="POST" action="/admin/users/<%= u.id %>/toggle-active">
+                <button type="submit" class="btn btn-sm <%= u.is_active ? 'btn-danger' : 'btn-outline' %>"><%= u.is_active ? 'Deactivate' : 'Activate' %></button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<%- include('../partials/footer') %>

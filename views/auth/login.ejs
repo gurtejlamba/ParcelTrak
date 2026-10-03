@@ -1,0 +1,33 @@
+<%- include('../partials/header', { title }) %>
+<div class="container-narrow">
+  <h1>Log In</h1>
+  <p class="subtitle">Access your PARCELTRAK account.</p>
+  <%- include('../partials/flash') %>
+  <div class="card">
+    <form method="POST" action="/login">
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required autofocus>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <button type="submit" class="btn btn-orange" style="width:100%;">Log In</button>
+    </form>
+  </div>
+  <p style="font-size:0.88rem; color:var(--text-muted);">
+    Don't have a sender account? <a href="/register">Sign up</a>.<br>
+    Agent, Branch Manager, and Administrator accounts are created by an administrator.
+  </p>
+  <div class="card" style="background:#fafbfd;">
+    <strong style="font-size:0.85rem;">Demo accounts</strong> <span class="hint">(password: <code>password123</code>)</span>
+    <table style="margin-top:0.6rem;">
+      <tr><td>admin@parceltrak.test</td><td>Administrator</td></tr>
+      <tr><td>manager@parceltrak.test</td><td>Branch Manager — Jaipur Hub</td></tr>
+      <tr><td>agent1@parceltrak.test</td><td>Delivery Agent — Jaipur Hub</td></tr>
+      <tr><td>sender@parceltrak.test</td><td>Sender</td></tr>
+    </table>
+  </div>
+</div>
+<%- include('../partials/footer') %>

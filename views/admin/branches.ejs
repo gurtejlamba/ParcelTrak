@@ -1,0 +1,45 @@
+<%- include('../partials/header', { title }) %>
+<div class="container">
+  <h1>Manage Branches</h1>
+  <p class="subtitle">Add branches or toggle whether they're active.</p>
+  <%- include('../partials/flash') %>
+
+  <% if (errors && errors.length) { %>
+    <div class="errors"><ul><% errors.forEach(function(e) { %><li><%= e %></li><% }) %></ul></div>
+  <% } %>
+
+  <div class="card">
+    <h2 style="margin-top:0;">Add Branch</h2>
+    <form method="POST" action="/admin/branches">
+      <div class="row-3">
+        <div class="field"><label for="code">Branch Code</label><input type="text" id="code" name="code" maxlength="8" value="<%= form.code || '' %>" required></div>
+        <div class="field"><label for="name">Branch Name</label><input type="text" id="name" name="name" value="<%= form.name || '' %>" required></div>
+        <div class="field"><label for="address">Address</label><input type="text" id="address" name="address" value="<%= form.address || '' %>"></div>
+      </div>
+      <button type="submit" class="btn btn-orange">Create Branch</button>
+    </form>
+  </div>
+
+  <h2>All Branches</h2>
+  <div class="card table-wrap">
+    <table>
+      <thead><tr><th>Code</th><th>Name</th><th>Address</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        <% branches.forEach(function(b) { %>
+          <tr>
+            <td><%= b.code %></td>
+            <td><%= b.name %></td>
+            <td><%= b.address || '—' %></td>
+            <td><span class="badge <%= b.is_active ? 'badge-delivered' : 'badge-cancelled' %>"><%= b.is_active ? 'Active' : 'Inactive' %></span></td>
+            <td>
+              <form method="POST" action="/admin/branches/<%= b.id %>/toggle-active">
+                <button type="submit" class="btn btn-sm <%= b.is_active ? 'btn-danger' : 'btn-outline' %>"><%= b.is_active ? 'Deactivate' : 'Activate' %></button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<%- include('../partials/footer') %>

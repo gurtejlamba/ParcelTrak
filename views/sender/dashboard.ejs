@@ -1,0 +1,39 @@
+<%- include('../partials/header', { title }) %>
+<div class="container">
+  <div class="btn-row" style="justify-content: space-between; align-items: center;">
+    <div>
+      <h1>My Consignments</h1>
+      <p class="subtitle">Everything you've booked with PARCELTRAK.</p>
+    </div>
+    <a href="/sender/book" class="btn btn-orange">+ Book a Parcel</a>
+  </div>
+  <%- include('../partials/flash') %>
+
+  <div class="card table-wrap">
+    <% if (consignments.length === 0) { %>
+      <div class="empty-state">You haven't booked any consignments yet. <a href="/sender/book">Book your first one</a>.</div>
+    <% } else { %>
+      <table>
+        <thead><tr><th>Tracking No.</th><th>Recipient</th><th>Status</th><th>Invoice</th><th>Booked</th><th></th></tr></thead>
+        <tbody>
+          <% consignments.forEach(function(c) { %>
+            <tr>
+              <td class="tracking-no"><%= c.tracking_number %></td>
+              <td><%= c.recipient_name %></td>
+              <td><span class="badge <%= statusBadgeClass(c.current_status) %>"><%= statusLabels[c.current_status] || c.current_status %></span></td>
+              <td>
+                <% if (c.invoice_status) { %>
+                  <span class="badge badge-<%= c.invoice_status.toLowerCase() %>"><%= c.invoice_status %></span>
+                  <%= formatMoney(c.invoice_amount) %>
+                <% } %>
+              </td>
+              <td><%= formatDate(c.created_at) %></td>
+              <td><a href="/sender/consignments/<%= c.id %>" class="btn btn-outline btn-sm">View</a></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</div>
+<%- include('../partials/footer') %>

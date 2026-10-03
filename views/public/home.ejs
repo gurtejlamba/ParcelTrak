@@ -1,0 +1,22 @@
+<%- include('../partials/header', { title }) %>
+<div class="hero">
+  <h1>Track Every Parcel, Every Step.</h1>
+  <p>PARCELTRAK replaces paper waybills with a single auditable platform for booking, transit scanning, delivery, and billing.</p>
+  <form action="/track" method="GET" class="track-box">
+    <input type="text" name="q" placeholder="Enter tracking number, e.g. PT20261004-ABC123" onkeydown="if(event.key==='Enter'){event.preventDefault(); if(this.value.trim()) window.location='/track/'+encodeURIComponent(this.value.trim());}">
+    <button type="button" class="btn btn-orange" onclick="var v=this.previousElementSibling.value.trim(); if(v) window.location='/track/'+encodeURIComponent(v); else window.location='/track';">Track</button>
+  </form>
+</div>
+
+<div class="modules">
+  <h2>Seven Modules, One Platform</h2>
+  <div class="grid grid-3">
+    <div class="module-card"><div class="num">01</div><h3>Booking &amp; Consignment</h3><p>Book a parcel, get an instant tracking number, cancel before dispatch.</p></div>
+    <div class="module-card"><div class="num">02</div><h3>Tracking &amp; Status</h3><p>Append-only scan events. Status is always derived from the latest event.</p></div>
+    <div class="module-card"><div class="num">03</div><h3>Route Assignment</div><p>Branch managers assign and reassign consignments to delivery agents.</p></div>
+    <div class="module-card"><div class="num">04</div><h3>Delivery &amp; Proof</h3><p>Capture signature-based proof of delivery; log failed attempts for re-try.</p></div>
+    <div class="module-card"><div class="num">05</div><h3>Billing &amp; Settlement</h3><p>Chargeable weight, tariff-based freight charges, and invoice settlement.</p></div>
+    <div class="module-card"><div class="num">06</div><h3>Branch Operations</h3><p>Record handovers and generate branch-level reports for any period.</p></div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

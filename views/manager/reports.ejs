@@ -1,0 +1,36 @@
+<%- include('../partials/header', { title }) %>
+<div class="container">
+  <h1>Branch Reports</h1>
+  <p class="subtitle">Pick a date range to generate a branch-level report.</p>
+
+  <div class="card">
+    <form method="GET" action="/manager/reports" class="row-2" style="align-items:end;">
+      <div class="field">
+        <label for="from">From</label>
+        <input type="date" id="from" name="from" value="<%= from %>">
+      </div>
+      <div class="field">
+        <label for="to">To</label>
+        <input type="date" id="to" name="to" value="<%= to %>">
+      </div>
+      <div class="field" style="grid-column: span 2;">
+        <button type="submit" class="btn btn-orange">Generate Report</button>
+      </div>
+    </form>
+  </div>
+
+  <h2>Summary: <%= from %> to <%= to %></h2>
+  <div class="grid grid-4">
+    <div class="card stat-card"><div class="value"><%= summary.bookings || 0 %></div><div class="label">Bookings</div></div>
+    <div class="card stat-card"><div class="value"><%= summary.delivered || 0 %></div><div class="label">Delivered</div></div>
+    <div class="card stat-card"><div class="value"><%= summary.cancelled || 0 %></div><div class="label">Cancelled</div></div>
+    <div class="card stat-card"><div class="value"><%= failedAttempts.n || 0 %></div><div class="label">Failed Attempts</div></div>
+  </div>
+
+  <div class="grid grid-3">
+    <div class="card stat-card"><div class="value"><%= formatMoney(revenue.total) %></div><div class="label">Revenue Invoiced</div></div>
+    <div class="card stat-card"><div class="value"><%= handovers.incoming || 0 %></div><div class="label">Incoming Handovers</div></div>
+    <div class="card stat-card"><div class="value"><%= handovers.outgoing || 0 %></div><div class="label">Outgoing Handovers</div></div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

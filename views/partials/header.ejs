@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> · PARCELTRAK</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="topbar">
+  <a href="/" class="brand">Parcel<span class="dot">Trak</span><small>Courier Management</small></a>
+  <nav class="nav-links">
+    <a href="/track">Track a Parcel</a>
+    <% if (currentUser) { %>
+      <% if (currentUser.role === 'SENDER') { %>
+        <a href="/sender">My Consignments</a>
+        <a href="/sender/book">Book a Parcel</a>
+        <a href="/sender/invoices">Invoices</a>
+      <% } else if (currentUser.role === 'AGENT') { %>
+        <a href="/agent">My Deliveries</a>
+      <% } else if (currentUser.role === 'MANAGER') { %>
+        <a href="/manager">Dashboard</a>
+        <a href="/manager/assign">Assign</a>
+        <a href="/manager/handover">Handover</a>
+        <a href="/manager/reports">Reports</a>
+      <% } else if (currentUser.role === 'ADMIN') { %>
+        <a href="/admin">Dashboard</a>
+        <a href="/admin/users">Users</a>
+        <a href="/admin/branches">Branches</a>
+        <a href="/admin/tariffs">Tariffs</a>
+      <% } %>
+      <span class="nav-user"><%= currentUser.name %> <span class="role-badge"><%= currentUser.role %></span></span>
+      <form action="/logout" method="POST" style="display:inline;">
+        <button type="submit" class="btn-link-plain">Log Out</button>
+      </form>
+    <% } else { %>
+      <a href="/login">Log In</a>
+      <a href="/register">Sign Up</a>
+    <% } %>
+  </nav>
+</div>
